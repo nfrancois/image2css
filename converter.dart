@@ -66,6 +66,7 @@ class BMPReader extends ImageReader {
           // Next position
           x++;
           if(x==width){
+            print("\n");
             x = 0;
             y--; 
           }          
@@ -85,10 +86,18 @@ class BMPReader extends ImageReader {
   }  
   
   String _readColor(List<int> b){
-    var red = b[2].toRadixString(16);
-    var green = b[1].toRadixString(16);
-    var blue = b[0].toRadixString(16);
+    var red = _toHex(b[2]);
+    var green = _toHex(b[1]);
+    var blue = _toHex(b[0]);
     return "#$red$green$blue";
+  }
+  
+  String _toHex(int val){
+    var result = val.toRadixString(16);
+    if(result.length == 1){
+      result = "0$result";
+    }
+    return result;
   }
   
   
@@ -108,9 +117,7 @@ main(){
   }
   var imageFileName = args[0];
   */
-  //var imageFileName = "dartLogo.png";
-  var imageFileName = "img24b.bmp";
-  //var imageFileName = "me.bmp";
+  var imageFileName = "vangogh.bmp";
   print("Convert $imageFileName");
   var imageFile = new File(imageFileName);
   var reader = new BMPReader();
