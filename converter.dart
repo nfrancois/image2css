@@ -1,6 +1,7 @@
 #import("dart:io");
 
-const int _MASK = 255;
+const int _MASK = 0xFF;
+const int PIXEL_SIZE = 5;
 
 class Pixel {
   int x, y;
@@ -17,7 +18,6 @@ abstract class ImageReader {
   abstract Image read(File imageFile);
 }
 
-
 class BMPReader extends ImageReader {
   
   Image read(File imageFile){
@@ -28,20 +28,16 @@ class BMPReader extends ImageReader {
     inputStream.onClosed = () => print("file is now closed");
     inputStream.onData = () {
       print(inputStream.available());
-      inputStream.read(18);
+      inputStream.read(18);// data we don't care
       int width = _readInt(inputStream.read(4));
       int height = _readInt(inputStream.read(4));
-      print("size = $height x $width");
-      inputStream.read(28);
-      //int sup = (width * 3) % 4;
+      inputStream.read(28);// data we don't care
       //Lecture des données
       for(int y = height - 1; y >= 0; y--){
          for(int x = 0; x < width; x++){
-           List<int> colors = inputStream.read(3);
-           print(colors);
+          var color = _readColor(inputStream.read(3));
+          print("${y*PIXEL_SIZE}px ${x*PIXEL_SIZE}px 4px ${PIXEL_SIZE}px $color,");
          }
-         //On saute le bourrage
-         //inputStream.read(sup);
        }      
       
     };
@@ -57,7 +53,17 @@ class BMPReader extends ImageReader {
     return result;
   }  
   
+  String _readColor(List<int> b){
+    var red = b[2].toRadixString(16);
+    var green = b[1].toRadixString(16);
+    var blue = b[0].toRadixString(16);
+    return "#$red$green$blue";
+  }
   
+  
+}
+
+class CssWriter {
   
 }
 
