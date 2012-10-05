@@ -3,6 +3,7 @@
 const int _MASK = 0xFF;
 const int PIXEL_SIZE = 5;
 
+/*
 class Pixel {
   int x, y;
   String color;
@@ -13,35 +14,65 @@ class Image {
   int height, width;
   List<Pixel> pixels;
 }
-
+*/
 abstract class ImageReader {
-  abstract Image read(File imageFile);
+  abstract void read(File imageFile);
 }
 
 class BMPReader extends ImageReader {
   
-  Image read(File imageFile){
-    var image = new Image();
-    //print(imageFile.readAsBytesSync());
+  const int HEADER1_DATA_STATE = 0;
+  const int WIDTH_DATA_STATE = 1;
+  const int HEIGHT_DATA_STATE = 2;
+  const int HEADER2_DATA_STATE = 3;
+  const int PIXEL_DATA_STATE = 4;  
+  Map<int, int> chunksSize; 
+  
+  BMPReader(){
+    chunksSize = new Map();
+    chunksSize[HEADER1_DATA_STATE] = 18;
+    chunksSize[HEIGHT_DATA_STATE] = 4;
+    chunksSize[WIDTH_DATA_STATE] = 4;    
+    chunksSize[HEADER2_DATA_STATE] = 28;
+    chunksSize[PIXEL_DATA_STATE] = 3;    
+  }
+  
+  void read(File imageFile){
     var inputStream = imageFile.openInputStream();
-    inputStream.onError = (e) => print(e);
-    inputStream.onClosed = () => print("file is now closed");
-    inputStream.onData = () {
-      print(inputStream.available());
-      inputStream.read(18);// data we don't care
-      int width = _readInt(inputStream.read(4));
-      int height = _readInt(inputStream.read(4));
-      inputStream.read(28);// data we don't care
-      //Lecture des données
-      for(int y = height - 1; y >= 0; y--){
-         for(int x = 0; x < width; x++){
-          var color = _readColor(inputStream.read(3));
-          print("${y*PIXEL_SIZE}px ${x*PIXEL_SIZE}px 4px ${PIXEL_SIZE}px $color,");
-         }
-       }      
-      
+    ChunkedInputStream cis = new ChunkedInputStream(inputStream);
+    var state = HEADER1_DATA_STATE;
+    cis.chunkSize = chunksSize[state];
+    int width, height, x, y;;
+    cis.onData = () {
+      List<int> buffer = cis.read();
+      switch(state){
+        case HEIGHT_DATA_STATE:
+          height = _readInt(buffer);
+          y = height-1;
+          state++;
+          break;
+        case WIDTH_DATA_STATE:
+          width = _readInt(buffer);
+          x = 0;
+          state++;
+          break;
+        case HEADER1_DATA_STATE:
+        case HEADER2_DATA_STATE:
+          state++;
+          break;
+        case PIXEL_DATA_STATE:
+          String color = _readColor(buffer);
+          print("${x*PIXEL_SIZE}px ${y*PIXEL_SIZE}px ${PIXEL_SIZE}px ${PIXEL_SIZE}px $color,");
+          // Next position
+          x++;
+          if(x==width){
+            x = 0;
+            y--; 
+          }          
+          break;          
+      }
+      cis.chunkSize = chunksSize[state];
     };
-    return image;
   }
   
   int _readInt(List<int> b){
@@ -77,6 +108,7 @@ main(){
   }
   var imageFileName = args[0];
   */
+  //var imageFileName = "dartLogo.png";
   var imageFileName = "img24b.bmp";
   //var imageFileName = "me.bmp";
   print("Convert $imageFileName");
