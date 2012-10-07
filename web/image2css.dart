@@ -1,8 +1,5 @@
 #import("dart:html");
 
-const BMP_HEADER = 4777534617194332160;// 0x424d663900000000;
-const PNG_HEADER = 0x89504e470d0a1a0a;
-
 main(){
   var imageInput = query("#imageInput");
   var imageCss = query("#cssImage");
@@ -33,12 +30,11 @@ class Converter {
     // TODO find type with header
     var array = new Uint8Array.fromBuffer(buffer);
     var signature = _readSignature(array);
-    /// Ugly comparison
-    if(signature == BMP_HEADER){
-      var imageReader = new BMPReader();
+    try {
+      var imageReader = ImageReader.fromSignature(signature);
       var content = imageReader.read(array);
       _write(content);
-    } else {
+    } on UnsupportedImageFormatException catch(uife){
       _unsupportedImageType();
     }
   }
@@ -64,12 +60,24 @@ class Converter {
 
 /// A Image reader decode image 
 abstract class ImageReader{
+  
+  static int BMP_HEADER = 4777534617194332160;// 0x424d663900000000;
+  static int PNG_HEADER = 0x89504e470d0a1a0a;  
+  
   abstract String read(Uint8Array array);
+  
+  static ImageReader fromSignature(int signature){
+    if(signature == BMP_HEADER){
+      return new BMPReader();
+    }
+    throw new UnsupportedImageFormatException();
+  }
 }
 
-//class UnsupportedImageFormatException implements Exception {
-//  const UnsupportedImageFormatException();
-//}
+/// Cannot read this image
+class UnsupportedImageFormatException implements Exception {
+  const UnsupportedImageFormatException();
+}
 
 
 /// Image reader for BMP files
