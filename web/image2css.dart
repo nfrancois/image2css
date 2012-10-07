@@ -1,6 +1,6 @@
 #import("dart:html");
 
-
+const BMP_HEADER = const [66, 77, 54, 108, 0];
 
 main(){
   var imageInput = query("#imageInput");
@@ -31,14 +31,23 @@ class Converter {
   _readFile(ArrayBuffer buffer){
     // TODO find type with header
     var array = new Uint8Array.fromBuffer(buffer);
-    var imageReader = new BMPReader();
-    var content = imageReader.read(array);
-    _write(content);
-    
+    var imageHeader = array.getRange(0, 5);
+    /// Ugly comparison
+    if(imageHeader.toString() == BMP_HEADER.toString()){
+      var imageReader = new BMPReader();
+      var content = imageReader.read(array);
+      _write(content);
+    } else {
+      _unsupportedImageType();
+    }
   }
   
   _write(String boxShadowContent){
     imageCss.style.boxShadow = boxShadowContent;
+  }
+  
+  _unsupportedImageType(){
+    window.alert("Unsupported image type");
   }
   
 }
@@ -47,6 +56,10 @@ class Converter {
 abstract class ImageReader{
   abstract String read(Uint8Array array);
 }
+
+//class UnsupportedImageFormatException implements Exception {
+//  const UnsupportedImageFormatException();
+//}
 
 
 /// Image reader for BMP files
