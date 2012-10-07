@@ -1,4 +1,4 @@
-#import("dart:io");
+import "dart:io";
 
 const int _MASK = 0xFF;
 const int PIXEL_SIZE = 5;
@@ -15,6 +15,21 @@ class Image {
   List<Pixel> pixels;
 }
 */
+
+String cssTemplate = "body {"
+"  background: black;  "
+"}"
+"#vangogh {"
+"    position: absolute;"
+"    top: 30px;"
+"    left: 50%;"
+"    margin-left: -200px;"
+"    width: 0;"
+"    height: 0;"
+"    box-shadow:"
+" ---- "
+"}";
+
 abstract class ImageReader {
   abstract void read(File imageFile);
 }
