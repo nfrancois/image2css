@@ -3,23 +3,22 @@
 
 
 main(){
- // TODO passer les elements
- new Converter();
+  var imageInput = query("#imageInput");
+  var imageCss = query("#cssImage");
+  new Converter(imageInput, imageCss);
 }
 
 class Converter {
   
   FileReader reader = new FileReader();
-  Element imageCss;
   Element imageInput;
+  Element imageCss;
   
-  Converter(){
+  Converter(this.imageInput, this.imageCss){
     _bind();
   }
   
   _bind(){
-    imageCss = query("#cssImage");
-    imageInput = query("#imageInput");
     imageInput.on.change.add((e) => _loadFile());
   }
   
@@ -39,7 +38,7 @@ class Converter {
   }
   
   _write(String boxShadowContent){
-    imageInput.style.boxShadow = boxShadowContent;
+    imageCss.style.boxShadow = boxShadowContent;
   }
   
 }
