@@ -1,6 +1,7 @@
 #import("dart:html");
 
-const BMP_HEADER = const [66, 77, 54, 108, 0];
+const BMP_HEADER = 4777534617194332160;// 0x424d663900000000;
+const PNG_HEADER = 0x89504e470d0a1a0a;
 
 main(){
   var imageInput = query("#imageInput");
@@ -31,9 +32,9 @@ class Converter {
   _readFile(ArrayBuffer buffer){
     // TODO find type with header
     var array = new Uint8Array.fromBuffer(buffer);
-    var imageHeader = array.getRange(0, 5);
+    var signature = _readSignature(array);
     /// Ugly comparison
-    if(imageHeader.toString() == BMP_HEADER.toString()){
+    if(signature == BMP_HEADER){
       var imageReader = new BMPReader();
       var content = imageReader.read(array);
       _write(content);
@@ -42,6 +43,15 @@ class Converter {
     }
   }
   
+  _readSignature(Uint8Array array){
+    var imageHeader = array.getRange(0, 8);
+    var signature = 0;
+    for(int i=0; i<imageHeader.length; i++){
+      signature = (signature << 8) + (imageHeader[i] & 255);
+    }
+    return signature;
+  }
+
   _write(String boxShadowContent){
     imageCss.style.boxShadow = boxShadowContent;
   }
@@ -86,15 +96,14 @@ class BMPReader extends ImageReader {
     return outBuffer.toString();    
   }
  
-  int _readInt(List<int> b){
+  int _readInt(List<int> bytes){
     var result = 0;
-    result = b[0] & 255;
-    result = result + ((b[1] & 255) << 8);
-    result = result + ((b[2] & 255) << 16);
-    result = result + ((b[3] & 255) << 24);
+    for(int i=0; i<bytes.length; i++){
+      result += ((bytes[i] & 255) << 8*i);
+    }
     return result;
-  }  
-
+  }   
+  
   String _readColor(List<int> b){
     var red = _toHex(b[2]);
     var green = _toHex(b[1]);
@@ -111,3 +120,4 @@ class BMPReader extends ImageReader {
   }  
   
 }
+
