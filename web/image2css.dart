@@ -27,7 +27,6 @@ class Converter {
   }
   
   _readFile(ArrayBuffer buffer){
-    // TODO find type with header
     var array = new Uint8Array.fromBuffer(buffer);
     var signature = _readSignature(array);
     try {
