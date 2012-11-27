@@ -1,4 +1,4 @@
-#import("dart:html");
+import "dart:html";
 
 main(){
   var imageInput = query("#imageInput");
@@ -63,7 +63,7 @@ abstract class ImageReader{
   static int BMP_HEADER = 4777534617194332160;// 0x424d663900000000;
   static int PNG_HEADER = 0x89504e470d0a1a0a;  
   
-  abstract String read(Uint8Array array);
+  String read(Uint8Array array);
   
   static ImageReader fromSignature(int signature){
     if(signature == BMP_HEADER){
