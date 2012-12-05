@@ -39,7 +39,7 @@ class Converter {
   }
   
   _readSignature(Uint8Array array){
-    var imageHeader = array.getRange(0, 8);
+    var imageHeader = array.getRange(0, 2);
     var signature = 0;
     for(int i=0; i<imageHeader.length; i++){
       signature = (signature << 8) + (imageHeader[i] & 255);
@@ -60,8 +60,7 @@ class Converter {
 /// A Image reader decode image 
 abstract class ImageReader{
   
-  static int BMP_HEADER = 4777534617194332160;// 0x424d663900000000;
-  static int PNG_HEADER = 0x89504e470d0a1a0a;  
+  static int BMP_HEADER = 0x424D;
   
   String read(Uint8Array array);
   
@@ -94,7 +93,7 @@ class BMPReader extends ImageReader {
         var color = _readColor(array.getRange(current, 3));
         current+=3;
         pixelCount++;
-        outBuffer.add("${x*5}px ${y*5}px 5px 5px $color");
+        outBuffer.add("${x*2}px ${y*2}px 2px 2px $color");
         if(pixelCount != pixelNbr) {
           outBuffer.add(",");
         }
