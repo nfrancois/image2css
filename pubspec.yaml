@@ -1,0 +1,6 @@
+name: Image to CSS
+version: 0.0.2
+author: Nicolas François
+description: Read a image and display it with css
+dependencies:
+  browser: any

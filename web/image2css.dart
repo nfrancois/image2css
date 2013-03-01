@@ -17,12 +17,12 @@ class Converter {
   }
   
   _bind(){
-    imageInput.on.change.add((e) => _loadFile());
+    imageInput.onChange.listen((e) => _loadFile());
   }
   
   _loadFile(){
     var imageFile = imageInput.files[0];
-    reader.on.load.add((e) => _readFile(reader.result));
+    reader.onLoad.listen((e) => _readFile(reader.result));
     reader.readAsArrayBuffer(imageFile);    
   }
   
@@ -93,9 +93,9 @@ class BMPReader extends ImageReader {
         var color = _readColor(array.getRange(current, 3));
         current+=3;
         pixelCount++;
-        outBuffer.add("${x*2}px ${y*2}px 2px 2px $color");
+        outBuffer.write("${x*2}px ${y*2}px 2px 2px $color");
         if(pixelCount != pixelNbr) {
-          outBuffer.add(",");
+          outBuffer.write(",");
         }
       }
     }
