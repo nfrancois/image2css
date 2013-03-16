@@ -1,6 +1,6 @@
-name: Image to CSS
+name: image_to_css
 version: 0.0.2
 author: Nicolas François
-description: Read a image and display it with css
+description: Display a BMP Image in CSS
 dependencies:
   browser: any
