@@ -1,6 +1,0 @@
-name: image_to_css
-version: 0.0.2
-author: Nicolas François
-description: Display a BMP Image in CSS
-dependencies:
-  browser: any
